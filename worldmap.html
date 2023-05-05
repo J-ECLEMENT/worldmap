@@ -316,11 +316,14 @@
 							internet_users,
 							unemployment
 							) {
+		surface_area = betterNumber(surface_area);
+		population = betterNumber(population);
+		gdp =betterNumber(gdp);
 		const contents = name ? `Capital : ${capital}<br />
 								Currency : ${currency}</b><br />
 								Surface Area : ${surface_area} km²</b><br />
 								<b>Population</b><br />
-								Population : ${population}000 people</b><br />
+								Population : ${population} 000 people</b><br />
 								Population density : ${pop_density} p/km²</b><br />
 								Population growth : ${pop_growth}%</b><br />
 								Fertility : ${fertility} child/woman</b><br />
@@ -584,6 +587,17 @@
 		};	
 	}
 
+	betterNumber(23)
+	function betterNumber(number){
+		var stringNumber = ''+number;
+		let len = stringNumber.length;
+		let nbSpace = Math.floor(len/3);
+		for(let i=1; i<=nbSpace; i++){
+			stringNumber = stringNumber.slice(0, len-3*i)+" "+stringNumber.slice(len-3*i,len-1+i)
+		}
+		return stringNumber;
+
+	}
 
 	function test(){
 		console.log("hola ="+detailsCountries[2].name)
