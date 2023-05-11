@@ -92,6 +92,13 @@ function style() {
 //
 function highlightFeature(e) {
     const layer = e.target;
+    
+	layer.setStyle({
+		weight: 5,
+		color: '#666',
+		dashArray: '',
+		fillOpacity: 0.7
+	});
 
     layer.bringToFront();
 
@@ -99,6 +106,15 @@ function highlightFeature(e) {
 }
 
 function resetHighlight(e) {
+    const layer = e.target;
+
+    layer.setStyle({
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7,
+	});
     info.update();
 }
 
@@ -175,7 +191,6 @@ info.update = function (props) {
 
 info.addTo(map);
 
-
 //
 // Detail session !! On y croit c'est du beau code
 //
@@ -211,55 +226,34 @@ details.update = function (name,
     population = betterNumber(population);
     gdp = betterNumber(gdp);
     const contents = name ? `Capital : ${capital}<br />
-								Currency : ${currency}</b><br />
-								Surface Area : ${surface_area} km²</b><br />
+								Currency : ${currency}<br />
+								Surface Area : ${surface_area} km²<br />
 								<b>Population</b><br />
-								Population : ${population} 000 people</b><br />
-								Population density : ${pop_density} p/km²</b><br />
-								Population growth : ${pop_growth}%</b><br />
-								Fertility : ${fertility} child/woman</b><br />
+								Population : ${population} 000 people<br />
+								Population density : ${pop_density} p/km²<br />
+								Population growth : ${pop_growth}%<br />
+                                Life expectancy male : ${life_expectancy_male} years<br />
+                                Life expectancy female : ${life_expectancy_female} years<br />
+								Fertility : ${fertility} child/woman<br />
 								<b>Education</b><br />
-								Post secondary school male : ${post_secondary_enrollment_male}%</b><br />
-								Post secondary school female : ${post_secondary_enrollment_female}%</b><br />
+								Post secondary school male : ${post_secondary_enrollment_male}%<br />
+								Post secondary school female : ${post_secondary_enrollment_female}%<br />
 								<b>Economy</b><br />
-								GDP : ${gdp}k$</b><br />
+								GDP : ${gdp}k$<br />
 								GDP per capita : ${gdp_per_capita} $/capita</b><br />
-								GDP growth : ${gdp_growth} %</b><br />
+								GDP growth : ${gdp_growth} %<br />
 								Unemployment : ${unemployment}%<br />
 								<b>Divers</b><br />
-								Homicide rate : ${homicide_rate} hom/100kpop</b><br />
-								Threatened Species : ${threatened_species}</b><br />
-								Internet users : ${internet_users}%</b><br />` : 'No data';
+								Homicide rate : ${homicide_rate} hom/100kpop<br />
+								Threatened Species : ${threatened_species}<br />
+								Internet users : ${internet_users}%<br />` : 'No data';
     this._div.innerHTML = `<h4>Details of ${name}</h4>${contents}`;
 };
 
-
-
 //
-// ajout de la legende (a travailler)
+// Ajout d'un legende en fonction du datatype
 //
-
 const legend = L.control({ position: 'bottomleft' });
-
-legend.onAdd = function (map) {
-
-    const div = L.DomUtil.create('div', 'info legend');
-    const grades = [];
-    const labels = [];
-    let from, to;
-
-    for (let i = -1; i < grades.length; i++) {
-        from = grades[i];
-        to = grades[i + 1];
-
-        labels.push(`<i style="background:${getColorData(from + 1, "pop_density")}"></i> ${from}${to ? `&ndash;${to}` : '+'}`);
-    }
-
-    div.innerHTML = labels.join('<br>');
-    return div;
-};
-
-legend.addTo(map);
 
 function addLegend(dataType) {
 
@@ -297,33 +291,9 @@ function addLegend(dataType) {
     legend.addTo(map);
 }
 
-function addLegendInternetUsers() {
-
-    legend.onAdd = function (map) {
-
-        const div = L.DomUtil.create('div', 'info legend');
-        const grades = [0, 15, 30, 45, 60, 75, 90];
-        const labels = [];
-        let from, to;
-        labels.push(`Internet users (%)`);
-        for (let i = -1; i < grades.length; i++) {
-            from = grades[i];
-            to = grades[i + 1];
-
-            labels.push(`<i style="background:${getColorInternetUser(from + 1)}"></i> ${from}${to ? `&ndash;${to}` : '+'}`);
-        }
-
-        div.innerHTML = labels.join('<br>');
-        return div;
-    };
-
-    legend.addTo(map);
-
-}
-
 
 //
-//recuperation des donné via l'API
+//recuperation des données via l'API
 //
 const checkAPIData = async (countryName, callback) => {
     //la clé recupere via mon compte de api_ninja
@@ -368,10 +338,10 @@ const checkAPIData = async (countryName, callback) => {
     return APIdata;
 }
 
-//
-// Récuperation de tout les données
-//
 
+//
+// Fenetre decompte des pays telechargé
+//
 let downladedCountries = 0;
 
 const load = L.control({ position: 'topleft' });
@@ -388,6 +358,9 @@ load.update = function (dw_countries) {
 
 load.addTo(map);
 
+//
+// Récuperation de tout les données
+//
 function allDataAPI() {
     let nbCountries = countries.features.length;
     console.log(nbCountries);
@@ -402,7 +375,6 @@ function allDataAPI() {
             }
             downladedCountries = downladedCountries + 1;
             load.update(downladedCountries);
-            console.log(downladedCountries + '/' + nbCountries);
             if (downladedCountries > nbCountries - 10) {
                 var compare = document.getElementById("compare1");
                 compare.style.visibility = "visible";
@@ -414,6 +386,8 @@ function allDataAPI() {
                 compare.style.visibility = "visible";
                 compare = document.getElementById("compare5");
                 compare.style.visibility = "visible";
+                compare = document.getElementById("loaddata");
+                compare.style.visibility = "hidden"
             }
         });
 
@@ -421,6 +395,10 @@ function allDataAPI() {
     };
 }
 
+
+//
+// met en place la couleur sur tout les pays en fonction du datatype
+//
 function setData(dataType) {
     addLegend(dataType);
     for (let i = 3; i < layers.length; i++) {
@@ -477,7 +455,9 @@ function setData(dataType) {
 
     };
 }
-
+//
+// Change les nombres en des nombres plus visible (ex: 1234567890 => 1 234 567 890)
+//
 function betterNumber(number) {
     var stringNumber = '' + number;
     let len = stringNumber.length;
