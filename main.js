@@ -161,8 +161,6 @@ function resetHighlight(e) {
         });
     }
 
-
-
     info.update();
 }
 
