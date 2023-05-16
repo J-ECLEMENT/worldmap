@@ -19,26 +19,21 @@
 	<div>
 
 	<ul>
-		<li><a id="loaddata" style="visibility:visible;cursor:pointer" onclick="allDataAPI()">Load all Data</a></li>
-		
-		<li><a id="compare1" style="visibility:hidden;cursor:pointer;" onclick="setData('pop_density')">Pop density</a></li>
-		<li><a id="compare2" style="visibility:hidden;cursor:pointer;" onclick="setData('internet_users')">Internet Users</a></li>
-		<li><a id="compare3" style="visibility:hidden;cursor:pointer;" onclick="setData('homicide_rate')">Homicide Rate</a></li>
-		<li><a id="compare4" style="visibility:hidden;cursor:pointer;" onclick="setData('gdp_growth')">GDP growth</a></li>
-		<li><a id="compare5" style="visibility:hidden;cursor:pointer;" onclick="setData('threatened_species')">Threatened Species</a></li>
-		<li><a id="compare6" style="visibility:hidden;cursor:pointer;" onclick="setData('life_expectancy')">Life Expectancy</a></li>
-
-
+		<li><a id="button_load_data" style="visibility:visible;cursor:pointer" onclick="allDataAPI()">Load all Data</a></li>
+		<li><a id="button_pop_density" style="visibility:hidden;cursor:pointer;" onclick="setData('pop_density')">Pop density</a></li>
+		<li><a id="button_internet_user" style="visibility:hidden;cursor:pointer;" onclick="setData('internet_users')">Internet Users</a></li>
+		<li><a id="button_homicide_rate" style="visibility:hidden;cursor:pointer;" onclick="setData('homicide_rate')">Homicide Rate</a></li>
+		<li><a id="button_gdp_growth" style="visibility:hidden;cursor:pointer;" onclick="setData('gdp_growth')">GDP growth</a></li>
+		<li><a id="button_threatened_species" style="visibility:hidden;cursor:pointer;" onclick="setData('threatened_species')">Threatened Species</a></li>
+		<li><a id="button_life_expectancy" style="visibility:hidden;cursor:pointer;" onclick="setData('life_expectancy')">Life Expectancy</a></li>
 	  </ul>
 	</div>
 	  
 	<div id='map'></div>
 
 
-
 <!-- On recupère les coutours des pays (countries.js geojson) et la class Country-->
 <script type="text/javascript" src="countries.js"></script>
 <script type="text/javascript" src="Country.js"></script>
-
 
 <script type="text/javascript" src="main.js"></script>
