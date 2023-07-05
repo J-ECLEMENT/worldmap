@@ -20,8 +20,6 @@ const geojson = L.geoJson(countries, {
     style,
     onEachFeature
 }).addTo(map);
-
-
 //
 //la couleur de l'amour c'est le cian
 //
@@ -74,10 +72,10 @@ function getColorData(d, data_type) {
             d = 0 ? '#DCDCDC' : '#DCDCDC';
     } else if(data_type == 'life_expectancy'){
         return d > 80 ? '#10d147' :
-            d > 75 ? '#16724B' :
-            d > 70 ? '#305774' :
-            d > 65 ? '#4A3C9D' :
-            d > 60 ? '#572FB1' :
+            d > 75 ? '#1d9840' :
+            d > 70 ? '#16724B' :
+            d > 65 ? '#305774' :
+            d > 60 ? '#4A3C9D' :
             d > 55 ? '#780DE5' :
             d > 50 ? '#ba6bff' : '#DCDCDC';
     }
@@ -114,6 +112,8 @@ function highlightFeature(e) {
         info.update(layer.feature.properties,found.name,
             found.capital,
             found.currency,
+            found.currencyCode,
+            found.currencyConvert,
             found.surface_area,
             found.population,
             found.pop_density,
@@ -189,6 +189,8 @@ function DetailsOfFeature(e) {
         details.update(result.name,
             result.capital,
             result.currency,
+            result.currencyCode,
+            result.currencyConvert,
             result.surface_area,
             result.population,
             result.pop_density,
@@ -235,6 +237,8 @@ details.onAdd = function (map) {
 details.update = function (name,
                         capital,
                         currency,
+                        currencyCode,
+                        currencyConvert,
                         surface_area,
                         population,
                         pop_density,
@@ -255,7 +259,7 @@ details.update = function (name,
     population = betterNumber(population);
     gdp = betterNumber(gdp);
     const contents = name ? `Capital : ${capital}<br />
-								Currency : ${currency}<br />
+								Currency : ${currency} (${currencyCode} = ${currencyConvert}$USD)<br />
 								Surface Area : ${surface_area} km²<br />
 								<b>Population</b><br />
 								Population : ${population} 000 people<br />
@@ -294,6 +298,8 @@ info.onAdd = function (map) {
 info.update = function (props, name,
                     capital,
                     currency,
+                    currencyCode,
+                    currencyConvert,
                     surface_area,
                     population,
                     pop_density,
@@ -332,7 +338,7 @@ info.update = function (props, name,
     gdp = betterNumber(gdp);
     if(dw_countries>254){
         const contents = name ? `Capital : ${capital}<br />
-                                Currency : ${currency}<br />
+                                Currency : ${currency} (${currencyCode} = ${currencyConvert}$USD)<br />
                                 Surface Area : ${surface_area} km² ${compare_sur}<br />
                                 <b>Population</b><br />
                                 Population : ${population} 000 people ${compare_pop}<br />
@@ -421,6 +427,7 @@ const checkAPIData = async (countryName, callback) => {
                 data[0].iso2,
                 data[0].capital,
                 data[0].currency.name,
+                data[0].currency.code,
                 data[0].surface_area,
                 data[0].population,
                 data[0].pop_density,
@@ -443,8 +450,28 @@ const checkAPIData = async (countryName, callback) => {
         .catch(err => {
             console.log(`error ${err}`)
         });
+    if(APIdata && APIdata.currencyCode != 'MRU' && APIdata.currencyCode !='VEF' && APIdata.currencyCode !='SSP' && APIdata.currencyCode !='STN'){
+        let url2 = 'https://api.api-ninjas.com/v1/convertcurrency?want=USD&have='+APIdata.currencyCode+'&amount=1000'
+        let APIdata2 = await fetch(url2, options)
+            .then(res => res.json()) 
+            .then(data => {
+                const  currencyConvert = data.new_amount
+                return currencyConvert;
+            })
+            .catch(err => {
+                console.log(`error ${err}`)
+                });
+        APIdata.currencyConvert = (APIdata2/1000).toPrecision(4)
+    }
+    
+
     return APIdata;
 }
+
+//
+//recuperation des données via l'API
+//
+
 
 //
 // Fenetre decompte des pays telechargé
@@ -472,6 +499,7 @@ load.addTo(map);
 function allDataAPI() {
     let nbCountries = countries.features.length;
     for (let i = 0; i < nbCountries; i++) {
+        console.log(countries.features[i].properties.ISO_A2)
         let data = checkAPIData(countries.features[i].properties.ISO_A2);
         let dataClass = data.then(function (result) {
             if (result) {
